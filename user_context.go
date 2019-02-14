@@ -41,6 +41,12 @@ func extractIdentity(token jose.JWT) (*userContext, error) {
 		preferredName = identity.Email
 	}
 
+	// azp claim is OPTIONAL, according to: https://openid.net/specs/openid-connect-core-1_0.html#IDToken
+	azParty, _, err := claims.StringClaim(claimAzp)
+	if err != nil {
+		return nil, err
+	}
+
 	var audiences []string
 	aud, found, err := claims.StringClaim(claimAudience)
 	if err == nil && found {
@@ -82,6 +88,7 @@ func extractIdentity(token jose.JWT) (*userContext, error) {
 	}
 
 	return &userContext{
+		azParty:       azParty,
 		audiences:     audiences,
 		claims:        claims,
 		email:         identity.Email,
@@ -106,9 +113,9 @@ func containsString(needle string, haystack []string) bool {
 	return false
 }
 
-// isAudience checks the audience
+// isAudience checks the audience, also considers the current azp
 func (r *userContext) isAudience(aud string) bool {
-	return containsString(aud, r.audiences)
+	return aud == r.azParty || containsString(aud, r.audiences)
 }
 
 // getRoles returns a list of roles

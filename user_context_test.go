@@ -25,6 +25,7 @@ import (
 func TestIsAudience(t *testing.T) {
 	user := &userContext{
 		audiences: []string{"test", "test2"},
+		azParty:   "clientid",
 	}
 	if !user.isAudience("test") {
 		t.Error("return should not have been false")
@@ -33,6 +34,9 @@ func TestIsAudience(t *testing.T) {
 		t.Error("return should not have been true")
 	}
 	if !user.isAudience("test2") {
+		t.Error("return should not have been false")
+	}
+	if !user.isAudience("clientid") {
 		t.Error("return should not have been false")
 	}
 }
@@ -86,6 +90,7 @@ func TestGetUserContext(t *testing.T) {
 	assert.Equal(t, "1e11e539-8256-4b3b-bda8-cc0d56cddb48", context.id)
 	assert.Equal(t, "gambol99@gmail.com", context.email)
 	assert.Equal(t, "rjayawardene", context.preferredName)
+	assert.Equal(t, "clientid", context.azParty)
 	assert.Equal(t, append(realmRoles, clientRoles...), context.roles)
 }
 

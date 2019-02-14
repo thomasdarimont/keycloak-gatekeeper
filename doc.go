@@ -56,6 +56,7 @@ const (
 	tokenURL         = "/token"
 	debugURL         = "/debug/pprof"
 
+	claimAzp            = "azp"
 	claimAudience       = "aud"
 	claimPreferredName  = "preferred_username"
 	claimRealmAccess    = "realm_access"
@@ -127,8 +128,8 @@ var (
 	ErrAccessTokenExpired = errors.New("the access token has expired")
 	// ErrRefreshTokenExpired indicates the refresh token as expired
 	ErrRefreshTokenExpired = errors.New("the refresh token has expired")
-	// ErrNoTokenAudience indicates their is not audience in the token
-	ErrNoTokenAudience = errors.New("the token does not audience in claims")
+	// ErrNoTokenAudience indicates there is no audience in the token
+	ErrNoTokenAudience = errors.New("the token does not contain audience in claims")
 	// ErrDecryption indicates we can't decrypt the token
 	ErrDecryption = errors.New("failed to decrypt token")
 )
@@ -401,6 +402,8 @@ type reverseProxy interface {
 type userContext struct {
 	// the id of the user
 	id string
+	// the authorized party
+	azParty string
 	// the audience for the token
 	audiences []string
 	// whether the context is from a session cookie or authorization header
